@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Main LinkedIn bot application
+  linkedin-bot:
+    build: .
+    container_name: linkedin-cyber-bot
+    ports:
+      - "3000:3000"  # Frontend UI
+      - "4000:4000"  # Backend API proxy
+    environment:
+      # AI Provider API Keys
+      - VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY}
+      - VITE_CLAUDE_API_KEY=${VITE_CLAUDE_API_KEY}
+
+      # LinkedIn Credentials
+      - VITE_LINKEDIN_ACCESS_TOKEN=${VITE_LINKEDIN_ACCESS_TOKEN}
+      - VITE_LINKEDIN_PERSON_URN=${VITE_LINKEDIN_PERSON_URN}
+
+      # Service URLs
+      - VITE_LINKEDIN_PROXY_URL=http://localhost:4000/api/linkedin
+      - FRONTEND_ORIGIN=http://localhost:3000
+      - VITE_ALLOWED_HOSTS=localhost:3000,localhost:4000
+
+      # Stable Diffusion (optional - for local GPU image generation)
+      # Uncomment if you have SD running on host machine
+      # - VITE_SD_API_URL=http://host.docker.internal:7860
+
+      # Bot Configuration
+      - BOT_AI_PROVIDER=${BOT_AI_PROVIDER:-gemini}
+      - BOT_IMAGE_PROVIDER=${BOT_IMAGE_PROVIDER:-gemini}
+      - BOT_DAILY_POST_ENABLED=${BOT_DAILY_POST_ENABLED:-true}
+      - BOT_DAILY_POST_TIME=${BOT_DAILY_POST_TIME:-09:00}
+      - BOT_WEEKLY_POST_ENABLED=${BOT_WEEKLY_POST_ENABLED:-true}
+      - BOT_WEEKLY_POST_DAY=${BOT_WEEKLY_POST_DAY:-1}
+      - BOT_WEEKLY_POST_TIME=${BOT_WEEKLY_POST_TIME:-10:00}
+    volumes:
+      # Persist configuration and data
+      - ./data/config:/app/data/config
+      - ./data/credentials:/app/data/credentials
+      - ./data/history:/app/data/history
+      # Mount .env file for secrets (optional - prefer env vars above)
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    networks:
+      - botnet
+
+  # Optional: Stable Diffusion for local image generation
+  # Uncomment this service if you want GPU-accelerated local image generation
+  # Requires NVIDIA GPU and nvidia-docker runtime
+  #
+  # stable-diffusion:
+  #   image: atinoda/text-generation-webui:default
+  #   container_name: stable-diffusion-webui
+  #   ports:
+  #     - "7860:7860"
+  #   environment:
+  #     - CLI_ARGS=--listen --api
+  #   volumes:
+  #     - ./sd-models:/app/models
+  #     - ./sd-outputs:/app/outputs
+  #   runtime: nvidia
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+  #   networks:
+  #     - botnet
+
+networks:
+  botnet:
+    driver: bridge
+
+volumes:
+  config:
+  credentials:
+  history:

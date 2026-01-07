@@ -1,0 +1,35 @@
+{
+  "name": "linkedin-cybersecurity-bot",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "proxy": "node server.js",
+    "start": "npm run proxy & npm run dev",
+    "docker:build": "docker build -t linkedin-cyber-bot .",
+    "docker:run": "docker run -p 3000:3000 -p 4000:4000 --env-file .env linkedin-cyber-bot"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@google/genai": "^1.30.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^24.35.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/node-cron": "^3.0.11",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

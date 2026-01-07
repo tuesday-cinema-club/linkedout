@@ -1,0 +1,5 @@
+{
+  "name": "2.0: AgenticFlow - Movie Blog Architect",
+  "description": "An interactive agentic framework demo where a Manager Agent orchestrates a Researcher, Copywriter, and Designer to build viral LinkedIn movie posts using the Gemini API.",
+  "requestFramePermissions": []
+}
